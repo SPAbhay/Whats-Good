@@ -1,6 +1,3 @@
-# !pip install -r /Workspace/Users/tisha.chordia@epsilon.com/Whats-Good/requirements.txt
-# dbutils.library.restartPython()
-
 from duckduckgo_search import DDGS
 from typing import List, Dict
 from dotenv import load_dotenv

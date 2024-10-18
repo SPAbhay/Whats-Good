@@ -1,6 +1,3 @@
-# !pip install -r /Workspace/Users/tisha.chordia@epsilon.com/Whats-Good/requirements.txt
-# dbutils.library.restartPython()
-
 from newsapi import NewsApiClient
 from typing import List, Dict
 import os

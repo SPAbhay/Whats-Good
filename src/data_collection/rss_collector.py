@@ -1,6 +1,3 @@
-# !pip install -r /Workspace/Users/tisha.chordia@epsilon.com/Whats-Good/requirements.txt
-# dbutils.library.restartPython()
-
 import feedparser
 from typing import List, Dict
 from datetime import datetime, timezone

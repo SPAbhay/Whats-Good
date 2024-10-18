@@ -1,0 +1,21 @@
+locations:
+  - name: United_States
+    country_code: US
+    language: en
+  - name: United_Kingdom
+    country_code: GB
+    language: en
+  - name: India
+    country_code: IN
+    language: en
+  - name: Japan
+    country_code: JP
+    language: ja
+  - name: Brazil
+    country_code: BR
+    language: pt
+
+rss_feeds:
+  - http://rss.cnn.com/rss/cnn_topstories.rss
+  - http://feeds.bbci.co.uk/news/rss.xml
+  - https://www.techcrunch.com/feed/

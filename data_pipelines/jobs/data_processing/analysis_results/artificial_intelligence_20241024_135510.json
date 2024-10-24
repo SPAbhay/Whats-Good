@@ -1,0 +1,65 @@
+{
+  "success": true,
+  "keyword": "artificial intelligence",
+  "analysis_timestamp": "2024-10-24T13:55:10.577136",
+  "popularity": {
+    "score": 75.28980507444854,
+    "category": "Very Popular",
+    "youtube_metrics": {
+      "total_videos": 50,
+      "total_views": 228942777,
+      "total_likes": 8754652,
+      "total_comments": 249269,
+      "engagement_rate": 0.03932825974238969,
+      "avg_view_velocity": 13787.432296519675,
+      "avg_views_per_video": 4578855.54,
+      "avg_likes_per_video": 175093.04,
+      "avg_comments_per_video": 4985.38
+    },
+    "reddit_metrics": {
+      "total_posts": 25,
+      "total_score": 210771,
+      "total_comments": 36165,
+      "avg_score_per_post": 8430.84,
+      "avg_comments_per_post": 1446.6,
+      "avg_upvote_ratio": 0.9084,
+      "posts_per_day": 0.030120481927710843,
+      "unique_subreddits": 14
+    }
+  },
+  "sentiment": {
+    "overall": {
+      "polarity": 0.1714322318500929,
+      "subjectivity": 0.42645182656218356,
+      "category": "Positive",
+      "confidence": 0.8720644520313449
+    },
+    "platform_breakdown": {
+      "youtube": {
+        "polarity": 0.22485293712402207,
+        "sample_size": 702
+      },
+      "reddit": {
+        "polarity": 0.04642778150909853,
+        "sample_size": 300
+      }
+    },
+    "stats": {
+      "total_samples": 1002,
+      "youtube_samples": 702,
+      "reddit_samples": 300
+    }
+  },
+  "topic_insights": {
+    "analysis": " Title Analysis:\n     - The titles are engaging and intriguing, which can attract readers to click and read the posts. However, they could benefit from being more concise and descriptive to give a better idea of the content within. For example, \"Artificial Intelligence Raises Ukrainian Drone Kill Rates to 80%\" could be rephrased as \"Ukraine's Increased Use of AI in Drone Warfare: A Statistical Analysis.\"\n\n   Content Analysis:\n     - The posts provide a mix of news, discussions, and opinions about artificial intelligence. This diversity can cater to different reader preferences. However, the content could benefit from more practical applications or case studies of AI to make it more relatable and actionable for content creators. For example, \"How a Small Business Implemented AI to Boost Efficiency\" would provide valuable insights for other businesses looking to adopt AI.\n     - The comments section offers a good opportunity for discussion and engagement. Encouraging more open-ended questions or prompts in the posts could stimulate more meaningful discussions and interactions among readers. For example, \"What are some innovative ways you've used AI in your work or projects?\"\n\n   Subreddit Analysis:\n     - The posts appear across 14 unique subreddits, which indicates a wide reach. However, focusing on a few niche subreddits related to AI and technology could help attract a more targeted audience interested in the topic. For example, r/MachineLearning or r/ArtificialIntelligence.\n\n   Actionable Insights:\n     - To make content more actionable for content creators, focus on providing practical applications of AI, case studies, or tutorials. Encourage discussions and interactions among readers to foster a sense of community and learning.\n     - To reach a more targeted audience, consider posting in niche subreddits related to AI and technology. This can help attract readers who are specifically interested in the topic and looking for practical insights.",
+    "timestamp": "2024-10-24T13:55:10.576800",
+    "model_info": {
+      "name": "mistral",
+      "temperature": 0.2
+    }
+  },
+  "raw_data": {
+    "youtube_comments": 702,
+    "reddit_posts": 25
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "success": true,
+  "keyword": "artificial intelligence",
+  "analysis_timestamp": "2024-10-24T13:48:43.646669",
+  "popularity": {
+    "score": 75.48726839621146,
+    "category": "Very Popular",
+    "youtube_metrics": {
+      "total_videos": 50,
+      "total_views": 215578327,
+      "total_likes": 9120553,
+      "total_comments": 204659,
+      "engagement_rate": 0.04325672311205941,
+      "avg_view_velocity": 10846.285535664558,
+      "avg_views_per_video": 4311566.54,
+      "avg_likes_per_video": 182411.06,
+      "avg_comments_per_video": 4093.18
+    },
+    "reddit_metrics": {
+      "total_posts": 25,
+      "total_score": 210759,
+      "total_comments": 36165,
+      "avg_score_per_post": 8430.36,
+      "avg_comments_per_post": 1446.6,
+      "avg_upvote_ratio": 0.9084,
+      "posts_per_day": 0.030120481927710843,
+      "unique_subreddits": 14
+    }
+  },
+  "sentiment": {
+    "overall": {
+      "polarity": 0.18442201439828793,
+      "subjectivity": 0.3977936424659176,
+      "category": "Positive",
+      "confidence": 0.8806619072602246
+    },
+    "platform_breakdown": {
+      "youtube": {
+        "polarity": 0.2346626331686239,
+        "sample_size": 824
+      },
+      "reddit": {
+        "polarity": 0.04642778150909853,
+        "sample_size": 300
+      }
+    },
+    "stats": {
+      "total_samples": 1124,
+      "youtube_samples": 824,
+      "reddit_samples": 300
+    }
+  },
+  "topic_insights": {
+    "analysis": " Title Analysis:\n     - The titles are generally informative and engaging, with a few exceptions like the first one which may not be immediately understandable without reading the text.\n     - Titles that include specific numbers (e.g., \"60 iconic artificial intelligences\") or events (e.g., \"Master in Artificial Intelligence Coming Out Soon\") tend to perform well as they provide a clear expectation of the content.\n\n   Content Analysis:\n   1. Posts with screenshots or images tend to generate more engagement, such as the second post about Ballie and Doggie.\n   2. Posts that offer unique perspectives or insights, like the third post about an AI recreating the Roman Empire, also receive high engagement.\n   3. Discussions around educational programs (e.g., Master of Science in AI/ML) or job opportunities (e.g., AI Engineer salary) are popular and can attract a large audience.\n   4. Controversial or thought-provoking posts, such as the last post about the potential impact of autonomous drones, tend to generate more comments and discussion.\n\n   Engagement Analysis:\n     - The average score suggests that the content is generally well-received, with an average score of 8430.36 out of 10000.\n     - The unique subreddits indicate a diverse audience, which can be beneficial for reaching a wider range of potential readers.\n\n   Actionable Insights:\n   1. Incorporate more visual content (images or screenshots) to increase engagement.\n   2. Offer unique perspectives or insights on AI-related topics to generate discussion and attract a larger audience.\n   3. Discuss educational programs, job opportunities, and salary information related to AI to capitalize on current interest in the field.\n   4. Provoke thought and controversy with posts that challenge common beliefs or present new ideas about AI.",
+    "timestamp": "2024-10-24T13:48:43.646025",
+    "model_info": {
+      "name": "mistral",
+      "temperature": 0.2
+    }
+  },
+  "raw_data": {
+    "youtube_comments": 824,
+    "reddit_posts": 25
+  }
+}
+

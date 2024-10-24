@@ -1,0 +1,61 @@
+{
+  "success": true,
+  "keyword": "artificial intelligence",
+  "analysis_timestamp": "2024-10-24T13:46:18.758956",
+  "popularity": {
+    "score": 75.93745058940235,
+    "category": "Very Popular",
+    "youtube_metrics": {
+      "total_videos": 50,
+      "total_views": 255222953,
+      "total_likes": 10587568,
+      "total_comments": 261741,
+      "engagement_rate": 0.04250914297665069,
+      "avg_view_velocity": 13844.776637027708,
+      "avg_views_per_video": 5104459.06,
+      "avg_likes_per_video": 211751.36,
+      "avg_comments_per_video": 5234.82
+    },
+    "reddit_metrics": {
+      "total_posts": 25,
+      "total_score": 210740,
+      "total_comments": 36165,
+      "avg_score_per_post": 8429.6,
+      "avg_comments_per_post": 1446.6,
+      "avg_upvote_ratio": 0.9084,
+      "posts_per_day": 0.030120481927710843,
+      "unique_subreddits": 14
+    }
+  },
+  "sentiment": {
+    "overall": {
+      "polarity": 0.1487004730992707,
+      "subjectivity": 0.394796426662235,
+      "category": "Positive",
+      "confidence": 0.8815610720013294
+    },
+    "platform_breakdown": {
+      "youtube": {
+        "polarity": 0.18859879231520263,
+        "sample_size": 769
+      },
+      "reddit": {
+        "polarity": 0.04642778150909853,
+        "sample_size": 300
+      }
+    },
+    "stats": {
+      "total_samples": 1069,
+      "youtube_samples": 769,
+      "reddit_samples": 300
+    }
+  },
+  "topic_insights": {
+    "error": "[Errno 61] Connection refused",
+    "timestamp": "2024-10-24T13:46:18.758939"
+  },
+  "raw_data": {
+    "youtube_comments": 769,
+    "reddit_posts": 25
+  }
+}

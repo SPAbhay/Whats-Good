@@ -2,13 +2,19 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ChatInterface from '@/components/chat/ChatInterface';
 
+interface Insight {
+  type: string;  // Adjust properties as needed
+  value: string;
+}
+
 interface Article {
   id: number;
   content: string;
   summarized_content: string;
-  insights: any;
-  brand_id: number;  // Add this field
+  insights: Insight[]; // Now insights is an array of Insight
+  brand_id: number;
 }
+
 
 export default function ArticlePage() {
   const router = useRouter();

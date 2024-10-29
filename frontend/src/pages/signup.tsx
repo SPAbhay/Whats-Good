@@ -18,6 +18,7 @@ export default function SignupPage() {
     confirmPassword: '',
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // Define loading state
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
 
   const validatePassword = (password: string) => {
@@ -46,16 +47,19 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true); // Set loading state to true
 
     // Validate password requirements first
     if (passwordErrors.length > 0) {
       setError('Please fix password requirements');
+      setLoading(false);
       return;
     }
 
     // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      setLoading(false);
       return;
     }
 
@@ -69,10 +73,40 @@ export default function SignupPage() {
 
       // Redirect to questionnaire after successful signup
       router.push('/onboarding/questions');
-    } catch (err: any) {
-      setError(err.response?.data?.detail || err.message || 'Signup failed');
+    } catch (err) {
+      let errorMessage = 'Signup failed'; // Default error message
+
+      if (isApiError(err)) {
+        // Check if the error matches the ApiError structure
+        errorMessage = err.response?.data?.detail || errorMessage;
+      } else if (err instanceof Error) {
+        // If it's a standard error
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
+
+  interface ApiErrorResponse {
+  response?: {
+    data?: {
+      detail?: string;
+    };
+  };
+}
+
+// Type guard to check if the error is of type ApiError
+function isApiError(error: unknown): error is ApiErrorResponse {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'response' in error &&
+    typeof (error as { response?: unknown }).response === 'object'
+  );
+}
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
@@ -163,8 +197,9 @@ export default function SignupPage() {
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            disabled={loading} // Disable button when loading
           >
-            Sign Up
+            {loading ? 'Signing Up...' : 'Sign Up'} {/* Update button text */}
           </button>
 
           <p className="text-center text-sm text-gray-600">

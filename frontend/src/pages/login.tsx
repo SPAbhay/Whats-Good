@@ -1,4 +1,3 @@
-// pages/login.tsx
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -23,8 +22,11 @@ export default function LoginPage() {
       } else {
         router.push('/onboarding/questions');
       }
-    } catch (err) {
+    } catch (error) {
+      // Set a generic error message
       setError('Invalid credentials');
+      // If you want to log the error, you can do so here
+      console.error(error); // Optional: Log the error for debugging
     }
   };
 
@@ -77,7 +79,7 @@ export default function LoginPage() {
           </button>
 
           <p className="text-center text-sm text-gray-600">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/signup" className="text-blue-500 hover:text-blue-600 font-medium">
               Sign up
             </Link>

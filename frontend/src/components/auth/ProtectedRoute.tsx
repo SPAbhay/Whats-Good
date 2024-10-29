@@ -11,7 +11,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       try {
         await auth.getProfile();
         setIsLoading(false);
-      } catch (error) {
+      } catch {
         router.push('/login');
       }
     };

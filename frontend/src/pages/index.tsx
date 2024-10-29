@@ -22,10 +22,9 @@ export default function Home() {
   const [brandDetails, setBrandDetails] = useState<BrandDetails | null>(null);
   const [isLoadingArticles, setIsLoadingArticles] = useState(true);
   const [isLoadingBrand, setIsLoadingBrand] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Load articles and brand details independently
     const loadData = async () => {
       // Load articles
       try {
@@ -36,10 +35,12 @@ export default function Home() {
         setArticles(articlesData);
       } catch (err) {
         console.error('Error fetching articles:', err);
+        setError('Failed to load articles');
       } finally {
         setIsLoadingArticles(false);
       }
 
+      // Load brand details
       try {
         console.log('Fetching brand details...');
         const brandData = await brand.getProfile();
@@ -47,6 +48,7 @@ export default function Home() {
         setBrandDetails(brandData);
       } catch (err) {
         console.error('Error fetching brand details:', err);
+        setError('Failed to load brand details');
       } finally {
         setIsLoadingBrand(false);
       }
@@ -69,61 +71,59 @@ export default function Home() {
                 <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
               </div>
             ) : (
-              <div className="grid gap-4">
-                {articles.map(article => (
-                  <Link
-                    href={`/articles/${article.id}`}
-                    key={article.id}
-                    className="block p-6 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
-                  >
-                    <h2 className="text-xl mb-2">{article.summarized_content}</h2>
-                    <p className="text-sm text-gray-600">Source: {article.source_url}</p>
-                  </Link>
-                ))}
-              </div>
+              <>
+                {error ? (
+                  <div className="text-red-500 text-center">{error}</div> // Display error if any
+                ) : (
+                  <div className="grid gap-4">
+                    {articles.map(article => (
+                      <Link
+                        href={`/articles/${article.id}`}
+                        key={article.id}
+                        className="block p-6 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+                      >
+                        <h2 className="text-xl mb-2">{article.summarized_content}</h2>
+                        <p className="text-sm text-gray-600">Source: {article.source_url}</p>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
 
           {/* Brand Details Section (1/3 width) */}
-<div className="w-1/3 p-8 border-l">
-  <div className="sticky top-8">
-    <h2 className="text-xl font-bold mb-6">Your Brand Profile</h2>
-    {isLoadingBrand ? (
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-          <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-          <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-        </div>
-      </div>
-    ) : brandDetails ? (
-      <div className="bg-white rounded-lg shadow p-6 space-y-4">
-        {/* ... existing brand details display ... */}
-      </div>
-    ) : (
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="text-center space-y-4">
-          <div className="text-yellow-600 bg-yellow-50 p-4 rounded-lg mb-4">
-            <h3 className="font-semibold mb-2">Welcome to Your Brand Dashboard!</h3>
-            <p className="text-sm text-yellow-700">
-              To get started, please complete the brand questionnaire.
-            </p>
+          <div className="w-1/3 p-8 border-l">
+            <div className="sticky top-8">
+              <h2 className="text-xl font-bold mb-6">Your Brand Profile</h2>
+              {isLoadingBrand ? (
+                <div className="bg-white rounded-lg shadow p-6">
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  </div>
+                </div>
+              ) : brandDetails ? (
+                <div className="bg-white rounded-lg shadow p-6 space-y-4">
+                  {/* ... existing brand details display ... */}
+                </div>
+              ) : (
+                <div className="bg-white rounded-lg shadow p-6">
+                  <div className="text-center space-y-4">
+                    <div className="text-yellow-600 bg-yellow-50 p-4 rounded-lg mb-4">
+                      <h3 className="font-semibold mb-2">Welcome to Your Brand Dashboard!</h3>
+                      <p className="text-sm text-yellow-700">To get started, please complete your onboarding.</p>
+                    </div>
+                    <Link href="/onboarding/questions" className="block text-center text-blue-500 hover:underline">
+                      Go to Onboarding
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-          <Link
-            href="/onboarding/questions"
-            className="inline-block px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-          >
-            Complete Brand Questionnaire
-          </Link>
-          <p className="text-sm text-gray-500 mt-4">
-            This will help us understand your brand better and provide personalized content recommendations.
-          </p>
-        </div>
-      </div>
-    )}
-  </div>
-</div>
         </div>
       </div>
     </ProtectedRoute>

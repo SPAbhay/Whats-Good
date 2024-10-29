@@ -1,9 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+interface MessageMetadata {
+    platform?: string;
+    error?: boolean;
+    [key: string]: unknown; // Use this for any additional metadata fields
+}
+
 interface Message {
     role: 'user' | 'assistant';
     content: string;
-    metadata?: any;
+    metadata?: MessageMetadata; // Updated to use specific metadata type
 }
 
 interface ProcessingStatus {
@@ -36,7 +42,7 @@ export default function ChatInterface({ articleId, brandId }: ChatInterfaceProps
     }, [messages, scrollToBottom]);
 
     // Debug logging function
-    const debugLog = useCallback((message: string, data?: any) => {
+    const debugLog = useCallback((message: string, data?: unknown) => {
         const timestamp = new Date().toISOString();
         console.log(`[${timestamp}] ${message}`, data || '');
     }, []);
@@ -102,7 +108,7 @@ export default function ChatInterface({ articleId, brandId }: ChatInterfaceProps
                     setMessages(prev => [...prev, {
                         role: 'assistant',
                         content: data.content,
-                        metadata: data.metadata
+                        metadata: data.metadata // Assuming metadata is compatible
                     }]);
                 } else if (data.type === 'error') {
                     debugLog('Received error:', data.error);
@@ -136,7 +142,7 @@ export default function ChatInterface({ articleId, brandId }: ChatInterfaceProps
             debugLog('WebSocket error:', error);
             setIsConnected(false);
         };
-    }, [articleId, brandId, reconnectAttempts, debugLog]);
+    }, [reconnectAttempts, debugLog]);
 
     useEffect(() => {
         debugLog('Initializing chat interface', { articleId, brandId });
@@ -153,7 +159,7 @@ export default function ChatInterface({ articleId, brandId }: ChatInterfaceProps
                 wsRef.current = null;
             }
         };
-    }, [articleId, brandId, connectWebSocket, debugLog]);
+    }, [connectWebSocket, debugLog, articleId, brandId]); // Included articleId and brandId
 
     const sendMessage = useCallback(async () => {
         debugLog('Attempting to send message...');
@@ -258,61 +264,45 @@ export default function ChatInterface({ articleId, brandId }: ChatInterfaceProps
                             ) : (
                                 <span className="text-red-500 text-sm flex items-center">
                                     <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                                    Disconnected {reconnectAttempts > 0 ? `(Retry ${reconnectAttempts}/3)` : ''}
+                                    Disconnected
                                 </span>
                             )}
                         </div>
                     </h2>
                 </div>
-
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {messages.map((msg, idx) => (
-                        <div
-                            key={idx}
-                            className={`${
-                                msg.role === 'user'
-                                    ? 'ml-auto bg-blue-100'
-                                    : 'mr-auto bg-gray-100'
-                            } max-w-[80%] rounded-lg p-3 ${
-                                msg.metadata?.error ? 'bg-red-100' : ''
-                            }`}
-                        >
-                            <p>{msg.content}</p>
-                            {msg.metadata?.platform && (
-                                <p className="text-xs text-gray-500 mt-1">
-                                    Platform: {msg.metadata.platform}
-                                </p>
-                            )}
-                        </div>
-                    ))}
-                    {isLoading && renderProcessingStatus()}
-                    <div ref={messagesEndRef} />
-                </div>
-
-                <div className="p-4 border-t">
-                    <div className="flex space-x-2">
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                    sendMessage();
-                                }
-                            }}
-                            className="flex-1 border rounded-lg px-4 py-2"
-                            placeholder="Type a message..."
-                        />
-                        <button
-                            onClick={sendMessage}
-                            className={`px-4 py-2 rounded-lg text-white ${
-                                isLoading ? 'bg-gray-500' : 'bg-blue-500'
-                            }`}
-                            disabled={isLoading}
-                        >
-                            Send
-                        </button>
+                <div className="flex-1 overflow-y-auto p-4">
+                    <div className="space-y-4">
+                        {messages.map((msg, index) => (
+                            <div key={index} className={msg.role === 'user' ? 'text-right' : 'text-left'}>
+                                <div className={`inline-block p-2 rounded-lg ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+                                    {msg.content}
+                                </div>
+                            </div>
+                        ))}
+                        {renderProcessingStatus()}
+                        <div ref={messagesEndRef} />
                     </div>
+                </div>
+                <div className="p-4 border-t">
+                    <input
+                        type="text"
+                        className="w-full border rounded-lg p-2"
+                        placeholder="Type your message..."
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                sendMessage();
+                            }
+                        }}
+                    />
+                    <button
+                        onClick={sendMessage}
+                        className="mt-2 w-full bg-blue-500 text-white rounded-lg p-2"
+                        disabled={isLoading || !isConnected}
+                    >
+                        {isLoading ? 'Sending...' : 'Send'}
+                    </button>
                 </div>
             </div>
         </div>

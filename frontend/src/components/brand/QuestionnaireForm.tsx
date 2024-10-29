@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { brand } from '../../services/api';
+import axios from 'axios'
 
 const QUESTIONS = [
   {
@@ -68,32 +69,35 @@ export default function QuestionnaireForm() {
   };
 
   const goToNextQuestion = async () => {
-    if (!answers[currentQuestion]?.trim()) {
-      setError('Please provide an answer before continuing');
-      return;
-    }
+  if (!answers[currentQuestion]?.trim()) {
+    setError('Please provide an answer before continuing');
+    return;
+  }
 
-    if (currentQuestion === QUESTIONS.length - 1) {
-      try {
-        // Log the data being sent
-        const questionnaireData = {
-          raw_brand_name: answers[1],
-          raw_industry_focus: answers[2],
-          raw_target_audience: answers[3],
-          raw_unique_value: answers[4],
-          raw_social_platforms: answers[5],
-          raw_successful_content: answers[6]
-        };
-        console.log('All answers:', answers);
-        console.log('Submitting data:', questionnaireData);
+  if (currentQuestion === QUESTIONS.length - 1) {
+    try {
+      // Log the data being sent
+      const questionnaireData = {
+        raw_brand_name: answers[1],
+        raw_industry_focus: answers[2],
+        raw_target_audience: answers[3],
+        raw_unique_value: answers[4],
+        raw_social_platforms: answers[5],
+        raw_successful_content: answers[6]
+      };
+      console.log('All answers:', answers);
+      console.log('Submitting data:', questionnaireData);
 
-        // Submit the data
-        const response = await brand.submitQuestionnaire(questionnaireData);
-        console.log('Response:', response);
+      // Submit the data
+      const response = await brand.submitQuestionnaire(questionnaireData);
+      console.log('Response:', response);
 
-        router.push('/');
-      } catch (err: any) {
-        console.error('Submission error:', err);
+      router.push('/');
+    } catch (err: unknown) {
+      console.error('Submission error:', err);
+
+      // Check if err is an Axios error
+      if (axios.isAxiosError(err)) {
         console.error('Error response:', err.response?.data);
 
         // More descriptive error message
@@ -102,11 +106,16 @@ export default function QuestionnaireForm() {
           err.message ||
           'Failed to submit answers. Please try again.'
         );
+      } else {
+        // Handle other types of errors
+        console.error('An unexpected error occurred:', err);
+        setError('An unexpected error occurred. Please try again.');
       }
-    } else {
-      setCurrentQuestion(prev => prev + 1);
     }
-  };
+  } else {
+    setCurrentQuestion(prev => prev + 1);
+  }
+};
 
   const goToPreviousQuestion = () => {
     if (currentQuestion > 0) {

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios'; // Import AxiosError
 
 const api = axios.create({
   baseURL: 'http://localhost:8000',
@@ -25,15 +25,15 @@ export const auth = {
     const response = await api.post('/auth/login', data);
     localStorage.setItem('token', response.data.access_token);
 
-    // Check if brand exists and store the result
     try {
       const hasBrand = await brand.checkBrandExists();
       return {
         user: response.data.user,
         hasBrand
       };
-    } catch (error) {
-      console.error('Error checking brand:', error);
+    } catch (error: unknown) { // Change to unknown
+      const axiosError = error as AxiosError; // Cast to AxiosError
+      console.error('Error checking brand:', axiosError);
       return {
         user: response.data.user,
         hasBrand: false
@@ -61,27 +61,23 @@ export const brand = {
     raw_successful_content?: string;
   }) => {
     try {
-      console.log(data)
       const response = await api.post('/auth/brand/questionnaire', data);
       return response.data;
-    } catch (error: any) {
-      console.error('API Error:', error);
+    } catch (error: unknown) { // Change to unknown
+      const axiosError = error as AxiosError; // Cast to AxiosError
 
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
-        console.error('Response headers:', error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error('Request error:', error.request);
+      console.error('API Error:', axiosError);
+      if (axiosError.response) {
+        console.error('Response data:', axiosError.response.data);
+        console.error('Response status:', axiosError.response.status);
+        console.error('Response headers:', axiosError.response.headers);
+      } else if (axiosError.request) {
+        console.error('Request error:', axiosError.request);
       } else {
-        // Something happened in setting up the request that triggered an Error
-        console.error('Error message:', error.message);
+        console.error('Error message:', axiosError.message);
       }
 
-      throw error;
+      throw error; // Optionally, you might want to throw a specific error type here
     }
   },
 
@@ -89,24 +85,25 @@ export const brand = {
     try {
       await api.get('/auth/brand/profile');
       return true;
-    } catch (error) {
-      if (error.response?.status === 404) {
+    } catch (error: unknown) { // Change to unknown
+      const axiosError = error as AxiosError; // Cast to AxiosError
+
+      if (axiosError.response?.status === 404) {
         return false;
       }
       throw error;
     }
   },
 
-
   getProfile: async () => {
     try {
-      console.log('Calling brand profile endpoint');
       const response = await api.get('/auth/brand/profile');
-      console.log('Brand profile response:', response.data);
       return response.data;
-    } catch (error) {
-      console.error('Error in getProfile:', error);
-      if (error.response?.status === 404) {
+    } catch (error: unknown) { // Change to unknown
+      const axiosError = error as AxiosError; // Cast to AxiosError
+
+      console.error('Error in getProfile:', axiosError);
+      if (axiosError.response?.status === 404) {
         return null;
       }
       throw error;

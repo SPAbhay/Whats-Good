@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { config } from '../../config';
 
 interface MessageMetadata {
     platform?: string;

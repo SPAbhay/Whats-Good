@@ -1,17 +1,17 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { config } from '../config';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 console.log('API_URL:', API_URL);
 
-// Use config for API_URL
+// Create Axios instance
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
 });
 
-// Add better typing for config in interceptor
+// Request interceptor to attach Authorization token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -20,7 +20,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Add interfaces for better type safety
+// Interfaces for type safety
 interface User {
   id: number;
   name: string;
@@ -43,6 +43,7 @@ interface BrandQuestionnaire {
   raw_successful_content?: string;
 }
 
+// Auth functions
 export const auth = {
   signup: async (data: { name: string; email: string; password: string }): Promise<User> => {
     const response = await api.post<AuthResponse>('/auth/signup', data);
@@ -61,7 +62,7 @@ export const auth = {
         hasBrand
       };
     } catch (error) {
-      if (axios.isAxiosError(error)) {  // Better error checking
+      if (axios.isAxiosError(error)) {
         console.error('Error checking brand:', error.response?.data || error.message);
       }
       return {
@@ -81,6 +82,7 @@ export const auth = {
   }
 };
 
+// Brand functions
 export const brand = {
   submitQuestionnaire: async (data: BrandQuestionnaire) => {
     try {
@@ -133,7 +135,7 @@ export const brand = {
   }
 };
 
-// Add error handler to api instance
+// Response interceptor for error handling
 api.interceptors.response.use(
   response => response,
   error => {

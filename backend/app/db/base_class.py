@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import sessionmaker
 
-from backend.core.config import Settings
+from ..core.config import Settings
 
 settings = Settings()
 

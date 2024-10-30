@@ -1,0 +1,16 @@
+[
+build-system
+]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[
+tool.setuptools
+]
+py-modules = []
+
+[
+project
+]
+name = "whatsgood"
+version = "0.1.0"]

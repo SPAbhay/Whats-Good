@@ -9,7 +9,7 @@ from alembic import context
 
 from backend.app.db.base_class import Base
 from backend.app.models import *  # This will import all your models
-from backend.core.config import Settings
+from backend.app.core.config import Settings
 
 # this is the Alembic Config object
 config = context.config

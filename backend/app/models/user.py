@@ -3,7 +3,7 @@ from sqlalchemy.sql import func
 from typing import Optional, Dict
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from backend.app.models.base import Base
+from .base import Base
 
 class User(Base):
     __tablename__ = "users"

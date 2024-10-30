@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios'; // Import AxiosError
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: 'http://whats-good-backend.up.railway.app',
   withCredentials: true,
 });
 

@@ -26,13 +26,13 @@ export default function ArticlePage() {
     if (id) {
       console.log("Fetching article with ID:", id);
       // 1. First fetch article data
-      fetch(`http://localhost:8000/api/articles/${id}`)
+      fetch(`http://whats-good-backend.up.railway.app/api/articles/${id}`)
         .then(res => res.json())
         .then(data => {
           console.log("Article data:", data);
           setArticle(data);
           // 2. Then initialize chat session
-          return fetch(`http://localhost:8000/api/articles/${id}/init-chat`, {
+          return fetch(`http://whats-good-backend.up.railway.app/api/articles/${id}/init-chat`, {
             method: 'POST'
           });
         })

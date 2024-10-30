@@ -9,6 +9,7 @@ __pycache__/
 .DS_Store
 
 # Environment Variables
+.env.development
 .env
 
 # Byte-compiled / optimized / DLL files
@@ -18,7 +19,7 @@ __pycache__/
 
 # Virtual environment
 venv/
-.env/
+.env.development/
 .venv/
 ENV/
 env.bak/

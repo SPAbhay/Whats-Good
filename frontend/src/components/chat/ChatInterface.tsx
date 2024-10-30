@@ -72,7 +72,7 @@ export default function ChatInterface({ articleId, brandId }: ChatInterfaceProps
         }
 
         const clientId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        const ws = new WebSocket(`ws://whats-good-backend.up.railway.app/ws/${clientId}`);
+        const ws = new WebSocket(`${config.WS_URL}/ws/${clientId}`);
         wsRef.current = ws;
 
         ws.onopen = () => {

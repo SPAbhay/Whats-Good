@@ -29,7 +29,7 @@ export default function Home() {
       // Load articles
       try {
         console.log('Fetching articles...');
-        const articlesResponse = await fetch('https://whats-good-backend.up.railway.app/api/articles');
+        const articlesResponse = await fetch('http://whats-good-backend.up.railway.app/api/articles');
         const articlesData = await articlesResponse.json();
         console.log('Received articles:', articlesData);
         setArticles(articlesData);

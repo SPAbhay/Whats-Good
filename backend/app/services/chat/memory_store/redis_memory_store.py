@@ -5,7 +5,7 @@ import zlib
 from redis.asyncio import Redis
 from ....models.article import Article
 from ....models.brand import Brand
-from .....core.config import Settings
+from core.config import Settings
 
 
 class RedisMemoryStore:

@@ -14,6 +14,8 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+    __table_args__ = {'extend_existing': True}
+
 class UserCreate(BaseModel):
     name: str
     email: EmailStr

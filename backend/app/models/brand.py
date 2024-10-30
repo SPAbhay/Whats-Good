@@ -12,6 +12,8 @@ class Brand(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
+    __table_args__ = {'extend_existing': True}
+
     # Raw responses directly from questionnaire
     raw_brand_name = Column(String, nullable=False)
     raw_industry_focus = Column(String, nullable=False)

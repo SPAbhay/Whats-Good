@@ -9,11 +9,11 @@ import jwt
 from sqlalchemy.sql import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..db.base_class import get_async_session
-from ..models.brand import BrandResponse, Brand
-from ..models.user import User, UserCreate, UserResponse
-from ..services.brand_processor import BrandProcessor
-from ...core.config import Settings
+from backend.app.db.base_class import get_async_session
+from app.models.brand import BrandResponse, Brand
+from app.models.user import User, UserCreate, UserResponse
+from app.services.brand_processor import BrandProcessor
+from core.config import Settings
 
 settings = Settings()
 router = APIRouter()

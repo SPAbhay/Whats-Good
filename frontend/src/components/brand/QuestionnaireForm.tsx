@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { brand } from '../../services/api';
-import axios from 'axios'
+import axios from 'axios';
 
 const QUESTIONS = [
   {
@@ -57,65 +57,65 @@ export default function QuestionnaireForm() {
   const progress = ((currentQuestion + 1) / QUESTIONS.length) * 100;
 
   const replaceBrandName = (text: string) => {
-    return text.replace('[brandName]', answers[1] || 'your brand');
+    // Use currentQuestion to get the correct question ID for the brand name
+    return text.replace('[brandName]', answers[QUESTIONS[0].id] || 'your brand');
   };
 
   const handleAnswer = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const currentQuestionId = QUESTIONS[currentQuestion].id;
     setAnswers(prev => ({
       ...prev,
-      [currentQuestion]: e.target.value
+      [currentQuestionId]: e.target.value
     }));
     setError('');
   };
 
   const goToNextQuestion = async () => {
-  if (!answers[currentQuestion]?.trim()) {
-    setError('Please provide an answer before continuing');
-    return;
-  }
-
-  if (currentQuestion === QUESTIONS.length - 1) {
-    try {
-      // Log the data being sent
-      const questionnaireData = {
-        raw_brand_name: answers[1],
-        raw_industry_focus: answers[2],
-        raw_target_audience: answers[3],
-        raw_unique_value: answers[4],
-        raw_social_platforms: answers[5],
-        raw_successful_content: answers[6]
-      };
-      console.log('All answers:', answers);
-      console.log('Submitting data:', questionnaireData);
-
-      // Submit the data
-      const response = await brand.submitQuestionnaire(questionnaireData);
-      console.log('Response:', response);
-
-      router.push('/');
-    } catch (err: unknown) {
-      console.error('Submission error:', err);
-
-      // Check if err is an Axios error
-      if (axios.isAxiosError(err)) {
-        console.error('Error response:', err.response?.data);
-
-        // More descriptive error message
-        setError(
-          err.response?.data?.detail ||
-          err.message ||
-          'Failed to submit answers. Please try again.'
-        );
-      } else {
-        // Handle other types of errors
-        console.error('An unexpected error occurred:', err);
-        setError('An unexpected error occurred. Please try again.');
-      }
+    const currentQuestionId = QUESTIONS[currentQuestion].id;
+    if (!answers[currentQuestionId]?.trim()) {
+      setError('Please provide an answer before continuing');
+      return;
     }
-  } else {
-    setCurrentQuestion(prev => prev + 1);
-  }
-};
+
+    if (currentQuestion === QUESTIONS.length - 1) {
+      try {
+        // Log the current answers for debugging
+        console.log('Current answers state:', answers);
+
+        const questionnaireData = {
+          raw_brand_name: answers[QUESTIONS[0].id],
+          raw_industry_focus: answers[QUESTIONS[1].id],
+          raw_target_audience: answers[QUESTIONS[2].id],
+          raw_unique_value: answers[QUESTIONS[3].id],
+          raw_social_platforms: answers[QUESTIONS[4].id],
+          raw_successful_content: answers[QUESTIONS[5].id]
+        };
+
+        // Log the transformed data for debugging
+        console.log('Submitting data:', questionnaireData);
+
+        const response = await brand.submitQuestionnaire(questionnaireData);
+        console.log('Response:', response);
+
+        router.push('/');
+      } catch (err: unknown) {
+        console.error('Submission error:', err);
+        if (axios.isAxiosError(err)) {
+          console.error('Error response:', err.response?.data);
+          setError(
+            err.response?.data?.detail ||
+            err.message ||
+            'Failed to submit answers. Please try again.'
+          );
+        } else {
+          console.error('An unexpected error occurred:', err);
+          setError('An unexpected error occurred. Please try again.');
+        }
+      }
+    } else {
+      setCurrentQuestion(prev => prev + 1);
+    }
+  };
 
   const goToPreviousQuestion = () => {
     if (currentQuestion > 0) {
@@ -123,13 +123,10 @@ export default function QuestionnaireForm() {
     }
   };
 
-
-
   const currentQ = QUESTIONS[currentQuestion];
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      {/* Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-2 bg-gray-200">
         <div
           className="h-full bg-blue-500 transition-all duration-300 ease-in-out"
@@ -138,14 +135,12 @@ export default function QuestionnaireForm() {
       </div>
 
       <div className="w-full max-w-xl">
-        {/* Progress Text */}
         <div className="text-center mb-8">
           <p className="text-sm text-gray-500">
             Question {currentQuestion + 1} of {QUESTIONS.length}
           </p>
         </div>
 
-        {/* Question Card */}
         <div className="bg-white rounded-lg shadow-lg p-8 mb-8 transform transition-all duration-300">
           <div className="text-center mb-6">
             <span className="text-4xl mb-4 block">{currentQ.emoji}</span>
@@ -155,7 +150,7 @@ export default function QuestionnaireForm() {
           </div>
 
           <textarea
-            value={answers[currentQuestion] || ''}
+            value={answers[currentQ.id] || ''}
             onChange={handleAnswer}
             maxLength={currentQ.maxLength}
             placeholder={currentQ.placeholder}
@@ -167,11 +162,10 @@ export default function QuestionnaireForm() {
           )}
 
           <div className="text-right text-sm text-gray-500 mt-2">
-            {answers[currentQuestion]?.length || 0}/{currentQ.maxLength}
+            {answers[currentQ.id]?.length || 0}/{currentQ.maxLength}
           </div>
         </div>
 
-        {/* Navigation Buttons */}
         <div className="flex justify-between space-x-4">
           <button
             onClick={goToPreviousQuestion}

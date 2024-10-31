@@ -29,8 +29,7 @@ class RedisMemoryStore:
         self.compression_threshold = compression_threshold
         self.prefix = prefix
 
-    def _get_memory_key(self, article_id: int, brand_id: int, memory_type: str) -> str:
-        """Generate Redis key for specific memory type"""
+    def _get_memory_key(self, article_id: str, brand_id: int, memory_type: str) -> str:
         return f"{self.prefix}{article_id}:{brand_id}:{memory_type}"
 
     def _compress_if_needed(self, data: str) -> bytes:
@@ -53,32 +52,28 @@ class RedisMemoryStore:
             brand: Brand,
             ttl: int = 3600
     ) -> bool:
-        """Initialize context for an article-brand combination"""
         try:
             # Store article content and insights
-            content_key = self._get_memory_key(article.id, brand.id, "content")
+            content_key = self._get_memory_key(article.article_id, brand.id, "content")
             await self.redis.setex(
                 content_key,
                 ttl,
                 self._compress_if_needed(json.dumps({
                     "content": article.content,
                     "summary": article.summarized_content,
-                    "insights": {
-                        "youtube": article.insights.get("youtube", []),
-                        "reddit": article.insights.get("reddit", [])
-                    },
+                    "insights": article.insights if hasattr(article, 'insights') else {},
                     "timestamp": datetime.now().timestamp(),
                     "type": "article_content"
                 }))
             )
 
             # Store brand identity
-            brand_key = self._get_memory_key(article.id, brand.id, "brand")
+            brand_key = self._get_memory_key(article.article_id, brand.id, "brand")
             await self.redis.setex(
                 brand_key,
                 ttl,
                 self._compress_if_needed(json.dumps({
-                    "brand_identity": brand.brand_identity,
+                    "brand_identity": brand.brand_identity if hasattr(brand, 'brand_identity') else {},
                     "timestamp": datetime.now().timestamp(),
                     "type": "brand_identity"
                 }))
@@ -86,12 +81,12 @@ class RedisMemoryStore:
 
             return True
         except Exception as e:
-            print(f"Error initializing context: {e}")
+            print(f"Error initializing context in Redis: {str(e)}")
             return False
 
     async def add_chat_memory(
             self,
-            article_id: int,
+            article_id: str,
             brand_id: int,
             message: Dict,
             ttl: int = 3600
@@ -123,7 +118,7 @@ class RedisMemoryStore:
 
     async def get_context(
             self,
-            article_id: int,
+            article_id: str,
             brand_id: int,
             include_chat: bool = True,
             max_messages: int = 10
@@ -179,7 +174,7 @@ class RedisMemoryStore:
 
     async def _cleanup_old_messages(
             self,
-            article_id: int,
+            article_id: str,
             brand_id: int,
             max_messages: int = 50
     ):
@@ -203,7 +198,7 @@ class RedisMemoryStore:
             for key, _ in key_times[:-max_messages]:
                 await self.redis.delete(key)
 
-    async def clear_context(self, article_id: int, brand_id: int):
+    async def clear_context(self, article_id: str, brand_id: int):
         """Clear all context data for an article-brand combination"""
         pattern = f"{self.prefix}{article_id}:{brand_id}:*"
         keys = await list(self.redis.scan_iter(pattern))

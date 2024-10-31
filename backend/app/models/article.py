@@ -1,20 +1,22 @@
-from sqlalchemy import Column, Integer, String, DateTime, Text, JSON, ForeignKey
-from sqlalchemy.sql import func
+from sqlalchemy import Column, String, Text, DateTime, JSON
 from .base import Base
 
 class Article(Base):
     __tablename__ = "articles"
 
-    id = Column(Integer, primary_key=True, index=True)
-    content = Column(Text, nullable=False)
+    article_id = Column(String(255), primary_key=True)
+    title = Column(Text)
+    author = Column(String(255))
+    source_url = Column(Text)
+    content = Column(Text)
+    publish_date = Column(DateTime)
+    category = Column(String(255))
+    cleaned_content = Column(Text)
     summarized_content = Column(Text)
-    source_url = Column(String)
-    brand_id = Column(Integer, ForeignKey("brands.id"))
-    insights = Column(JSON, default=lambda: {
-        "youtube": [],
-        "reddit": []
-    })
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    analytics_updated_at = Column(DateTime(timezone=True))
-
-    __table_args__ = {'extend_existing': True}
+    topic_1 = Column(String(255))
+    topic_2 = Column(String(255))
+    topic_3 = Column(String(255))
+    topic_4 = Column(String(255))
+    topic_5 = Column(String(255))
+    insights = Column(JSON)
+    created_at = Column(DateTime)

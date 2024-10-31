@@ -359,27 +359,60 @@ Generate a tweet that captures the main point while being engaging:"""
             context: Dict[str, Any]
     ) -> AgentResponse:
         try:
-            # Get article and brand info from context
-            chat_context = context.get("chat_context", {})
+            print(f"Processing message: {message}")
+            print(f"With context: {context}")
+
+            # Validate context
+            chat_context = context.get("chat_context")
+            if not chat_context:
+                print("No chat context found")
+                return AgentResponse(
+                    content="Sorry, I couldn't access the conversation context. Please try again.",
+                    confidence_score=0.0,
+                    metadata={"error": "Missing context"}
+                )
+
+            # Get article content
             article_content = chat_context.get("article_content", {})
+            if not article_content:
+                print("No article content found")
+                return AgentResponse(
+                    content="Sorry, I couldn't access the article content. Please try again.",
+                    confidence_score=0.0,
+                    metadata={"error": "Missing article"}
+                )
+
+            # Get brand identity
             brand_identity = chat_context.get("brand_identity", {})
 
-            # Extract actual content from nested structure
+            # Extract content safely
             article_text = article_content.get("content", "") if isinstance(article_content, dict) else ""
+            if not article_text:
+                print("No article text found")
+                return AgentResponse(
+                    content="Sorry, I couldn't find the article content. Please try again.",
+                    confidence_score=0.0,
+                    metadata={"error": "No content"}
+                )
 
-            # Analyze query type
+            # Process based on message type
             if "tweet" in message.lower() or "twitter" in message.lower():
                 return await self._generate_tweet(article_text, brand_identity)
             elif "youtube" in message.lower() or "video" in message.lower():
                 return await self._generate_youtube_idea(article_text, brand_identity)
             else:
-                return await self._generate_contextual_response(message, article_text, brand_identity, context)
+                return await self._generate_contextual_response(
+                    message=message,
+                    article_text=article_text,
+                    brand_identity=brand_identity,
+                    context=context
+                )
 
         except Exception as e:
             print(f"Error in process_message: {str(e)}")
             return AgentResponse(
-                content="I apologize, but I encountered an error. Could you please try rephrasing your request?",
-                confidence_score=0.5,
+                content="I apologize, but I encountered an error. Please try again.",
+                confidence_score=0.0,
                 metadata={"error": str(e)}
             )
 
@@ -422,35 +455,54 @@ Generate a tweet that captures the main point while being engaging:"""
     async def _generate_contextual_response(
             self,
             message: str,
-            article_content: str,
+            article_text: str,
             brand_identity: Dict,
             context: Dict
     ) -> AgentResponse:
-        prompt = f"""Help create content based on this context:
-
-User Message: {message}
-
-Article Content:
-{article_content}
-
-Brand Identity:
-{brand_identity.get('brand_identity', '')}
-
-Please provide a helpful response that:
-1. Directly addresses the user's request
-2. Uses the article content appropriately
-3. Maintains brand voice
-4. Provides specific, actionable suggestions"""
-
         try:
+            print("Starting to generate response...")
+            prompt = f"""Help create content based on this context:
+
+    User Message: {message}
+
+    Article Content:
+    {article_text}
+
+    Brand Identity:
+    {brand_identity.get('brand_identity', '')}
+
+    Please provide a helpful response that:
+    1. Directly addresses the user's request
+    2. Uses the article content appropriately
+    3. Maintains brand voice
+    4. Provides specific, actionable suggestions"""
+
+            print("Sending prompt to Ollama...")
             response = await self.llm.ainvoke(prompt)
+            print("Received response from Ollama:", response)
+
+            # Send the response through websocket
+            if "websocket" in context:
+                try:
+                    await context["websocket"].send_json({
+                        "type": "message",
+                        "content": response,
+                        "metadata": {"platform": context.get("platform", "General")}
+                    })
+                    print("Response sent through websocket")
+                except Exception as ws_error:
+                    print(f"WebSocket send error: {ws_error}")
+
             return AgentResponse(
                 content=response,
                 confidence_score=0.9,
                 metadata={"platform": context.get("platform", "General")}
             )
         except Exception as e:
-            print(f"Error generating response: {e}")
+            print(f"Error in _generate_contextual_response: {str(e)}")
+            print(f"Error type: {type(e)}")
+            import traceback
+            print(f"Traceback: {traceback.format_exc()}")
             return AgentResponse(
                 content="I apologize, but I'm having trouble generating a response. Could you rephrase your question?",
                 confidence_score=0.5,

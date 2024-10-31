@@ -186,48 +186,52 @@ class BrandQuestionnaireResponse(BaseModel):
     raw_successful_content: Optional[str]
 
 
-# Update the brand endpoints with proper paths
 @router.post("/brand/questionnaire", response_model=BrandResponse)
 async def submit_brand_questionnaire(
-        questionnaire: BrandQuestionnaireResponse,
+        questionnaire: dict,
         current_user: User = Depends(get_current_user),
         db: AsyncSession = Depends(get_async_session)
 ):
-    stmt: Select = select(Brand).where(
-        and_(Brand.user_id == current_user.id)
-    )
-    result = await db.execute(stmt)
-    existing_brand = result.scalar_one_or_none()
-
-    if existing_brand:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Brand profile already exists for this user"
-        )
-
     try:
+        print("Starting brand questionnaire submission")  # Debug log
+        result = await db.execute(
+            select(Brand).where(and_(Brand.user_id == current_user.id))
+        )
+        existing_brand = result.scalar_one_or_none()
+
+        if existing_brand:
+            raise HTTPException(status_code=400, detail="Brand profile already exists")
+
         new_brand = Brand(
             user_id=current_user.id,
-            raw_brand_name=questionnaire.raw_brand_name,
-            raw_industry_focus=questionnaire.raw_industry_focus,
-            raw_target_audience=questionnaire.raw_target_audience,
-            raw_unique_value=questionnaire.raw_unique_value,
-            raw_social_platforms=questionnaire.raw_social_platforms,
-            raw_successful_content=questionnaire.raw_successful_content
+            raw_brand_name=questionnaire.get("raw_brand_name"),
+            raw_industry_focus=questionnaire.get("raw_industry_focus"),
+            raw_target_audience=questionnaire.get("raw_target_audience"),
+            raw_unique_value=questionnaire.get("raw_unique_value"),
+            raw_social_platforms=questionnaire.get("raw_social_platforms"),
+            raw_successful_content=questionnaire.get("raw_successful_content")
         )
 
+        print("Created new brand object")  # Debug log
         db.add(new_brand)
         await db.commit()
         await db.refresh(new_brand)
 
-        return new_brand
+        print("Starting brand processing")  # Debug log
+        processor = BrandProcessor()
+        processed_brand = await processor.process_brand_responses(new_brand.id, db)
+        print(f"Processing result: {processed_brand}")  # Debug log
+
+        if not processed_brand:
+            raise HTTPException(status_code=500, detail="Failed to process brand")
+
+        await db.refresh(processed_brand)  # Refresh to get latest data
+        return processed_brand
 
     except Exception as e:
+        print(f"Error in brand submission: {str(e)}")  # Debug log
         await db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/brand/{brand_id}/process", response_model=BrandResponse)
 async def process_brand_responses(
@@ -271,38 +275,12 @@ async def get_brand_profile(
             detail="Brand profile not found"
         )
 
+    # If brand exists but isn't processed, process it now
+    if not brand.processed_brand_name:
+        print("Processing unprocessed brand")  # Debug log
+        processor = BrandProcessor()
+        processed_brand = await processor.process_brand_responses(brand.id, db)
+        if processed_brand:
+            return processed_brand
+
     return brand
-
-
-@router.put("/brand/profile", response_model=BrandResponse)
-async def update_brand_profile(
-        questionnaire: BrandQuestionnaireResponse,
-        current_user: User = Depends(get_current_user),
-        db: AsyncSession = Depends(get_async_session)
-):
-    stmt: Select = select(Brand).where(
-        and_(Brand.user_id == current_user.id)
-    )
-    result = await db.execute(stmt)
-    existing_brand = result.scalar_one_or_none()
-
-    if not existing_brand:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Brand profile not found"
-        )
-
-    try:
-        for field, value in questionnaire.model_dump().items():
-            setattr(existing_brand, field, value)
-
-        await db.commit()
-        await db.refresh(existing_brand)
-        return existing_brand
-
-    except Exception as e:
-        await db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
-        )

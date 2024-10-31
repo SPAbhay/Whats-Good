@@ -18,45 +18,55 @@ class ChatContextManager:
     async def initialize_chat_context(
             self,
             db: AsyncSession,
-            article_id: int,
+            article_id: str,
             brand_id: int
     ) -> bool:
-        """Initialize chat context with article and brand information"""
         try:
-            # Fetch article and brand from database
-            article_query = select(Article).where(and_(Article.id == article_id))
-            brand_query = select(Brand).where(and_(Brand.id == brand_id))
+            print(f"Starting chat context initialization for article {article_id} and brand {brand_id}")
 
+            # Get article
+            article_query = select(Article).where(and_(Article.article_id == str(article_id)))
             article_result = await db.execute(article_query)
-            brand_result = await db.execute(brand_query)
-
             article = article_result.scalar_one_or_none()
+
+            if not article:
+                print(f"Article not found: {article_id}")
+                return False
+
+            # Get brand
+            brand_query = select(Brand).where(and_(Brand.id == brand_id))
+            brand_result = await db.execute(brand_query)
             brand = brand_result.scalar_one_or_none()
 
-            if not article or not brand:
-                print(f"Failed to find {'article' if not article else 'brand'}")
+            if not brand:
+                print(f"Brand not found: {brand_id}")
                 return False
 
-            # Initialize context in Redis
-            success = await self.memory_store.initialize_context(
-                article=article,
-                brand=brand
-            )
+            try:
+                # Initialize context in Redis
+                success = await self.memory_store.initialize_context(
+                    article=article,
+                    brand=brand
+                )
 
-            if not success:
-                print("Failed to initialize Redis context")
+                if not success:
+                    print("Failed to initialize Redis context")
+                    return False
+
+                print("Successfully initialized chat context")
+                return True
+
+            except Exception as redis_error:
+                print(f"Redis error: {str(redis_error)}")
                 return False
-
-            print(f"Successfully initialized context for article {article_id} and brand {brand_id}")
-            return True
 
         except Exception as e:
-            print(f"Error initializing chat context: {e}")
+            print(f"Error in initialize_chat_context: {str(e)}")
             return False
 
     async def add_message_to_context(
             self,
-            article_id: int,
+            article_id: str,
             brand_id: int,
             message: Dict,
             ttl: int = 3600
@@ -73,15 +83,17 @@ class ChatContextManager:
             print(f"Error adding message to context: {e}")
             return False
 
+    # context_manager.py
     async def get_chat_context(
             self,
-            article_id: int,
+            article_id: str,
             brand_id: int,
             include_chat: bool = True,
             max_messages: int = 10
     ) -> Dict:
-        """Get complete chat context including article and chat history"""
         try:
+            print(f"Getting chat context for article {article_id} and brand {brand_id}")
+
             context = await self.memory_store.get_context(
                 article_id=article_id,
                 brand_id=brand_id,
@@ -89,9 +101,19 @@ class ChatContextManager:
                 max_messages=max_messages
             )
 
-            return self._enrich_context(context)
+            if not context:
+                print(f"No context found for article {article_id}")
+                return {
+                    "article_content": None,
+                    "brand_identity": None,
+                    "chat_history": []
+                }
+
+            print(f"Retrieved context: {context.keys()}")
+            return context
+
         except Exception as e:
-            print(f"Error retrieving chat context: {e}")
+            print(f"Error getting chat context: {e}")
             return {
                 "article_content": None,
                 "brand_identity": None,
@@ -166,7 +188,7 @@ class ChatContextManager:
 
     async def clear_chat_context(
             self,
-            article_id: int,
+            article_id: str,
             brand_id: int
     ):
         """Clear chat context"""

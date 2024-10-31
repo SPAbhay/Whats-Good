@@ -85,24 +85,16 @@ export const auth = {
 // Brand functions
 export const brand = {
   submitQuestionnaire: async (data: BrandQuestionnaire) => {
-    try {
-      const response = await api.post('/auth/brand/questionnaire', data);
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('API Error:', error.message);
-        if (error.response) {
-          console.error('Response:', {
-            data: error.response.data,
-            status: error.response.status,
-            headers: error.response.headers
-          });
-        }
-        throw new Error(error.response?.data?.detail || error.message);
-      }
-      throw error;
-    }
-  },
+  try {
+    console.log('Submitting questionnaire with data:', data);
+    const response = await api.post('/auth/brand/questionnaire', data);
+    console.log('Questionnaire submission response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Questionnaire submission error:', error);
+    throw error;
+  }
+},
 
   checkBrandExists: async (): Promise<boolean> => {
     try {
@@ -117,22 +109,21 @@ export const brand = {
   },
 
   getProfile: async () => {
-    try {
-      console.log('Fetching brand profile...');
-      const response = await api.get('/auth/brand/profile');
-      console.log('Brand profile response:', response.data);
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Error in getProfile:', error.message);
-        if (error.response?.status === 404) {
-          return null;
-        }
-        throw new Error(error.response?.data?.detail || error.message);
-      }
-      throw error;
-    }
+  try {
+    console.log('Fetching brand profile...');
+    const response = await api.get('/auth/brand/profile');
+    console.log('Raw brand data:', response.data);
+    // Check if processed fields exist
+    const hasProcessedFields = response.data.processed_brand_name ||
+                             response.data.processed_industry ||
+                             response.data.processed_target_audience;
+    console.log('Has processed fields:', hasProcessedFields);
+    return response.data;
+  } catch (error) {
+    console.error('Brand profile error:', error);
+    throw error;
   }
+}
 };
 
 // Response interceptor for error handling

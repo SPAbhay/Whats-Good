@@ -4,6 +4,7 @@ from datetime import datetime
 from langchain_community.vectorstores import Pinecone
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import OllamaLLM
+from langchain_openai import OpenAI
 from langchain.prompts import PromptTemplate
 from pinecone import Pinecone as PineconeClient
 import os
@@ -25,8 +26,9 @@ class HyDEStrategy:
             model_kwargs={'device': 'cpu'},
             encode_kwargs={'normalize_embeddings': True}
         )
-        self.llm = OllamaLLM(model="mistral", temperature=0.2)
-        
+        # self.llm = OllamaLLM(model="mistral", temperature=0.2)
+        self.llm = OpenAI(model='gpt-3.5-turbo-instruct', api_key=os.getenv('OPENAI_API_KEY'), temperature=0.2)
+
         self.index_name = index_name
         self.namespace = namespace
         # Initialize vector store

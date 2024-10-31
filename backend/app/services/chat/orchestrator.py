@@ -1,7 +1,9 @@
 import asyncio
+import os
 from typing import Dict, Any, Optional, List
 from pydantic import BaseModel, Field
 from langchain_ollama import OllamaLLM
+from langchain_openai import OpenAI
 
 from .memory_store.context_manager import ChatContextManager
 from .response_formatter import ResponseFormatter
@@ -100,7 +102,8 @@ class MainOrchestrator:
             temperature: float = 0.7
     ):
         self.context_manager = context_manager
-        self.llm = OllamaLLM(model=model_name, temperature=temperature)
+        # self.llm = OllamaLLM(model=model_name, temperature=temperature)
+        self.llm = OpenAI(model='gpt-3.5-turbo-instruct', api_key=os.getenv('OPENAI_API_KEY'), temperature=0.2)
         self.response_formatter = ResponseFormatter()
         self.content_analyzer = ContentAnalyzer()
 

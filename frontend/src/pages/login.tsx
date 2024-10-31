@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { auth } from '../services/api';
+import { AuthLayout } from '../components/layout/AuthLayout';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,29 +32,30 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-bold text-center mb-8">Login</h2>
+    <AuthLayout>
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-surface-800 mb-2">Welcome Back</h2>
+          <p className="text-surface-400">Sign in to continue to your account</p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-1">
+            <label htmlFor="email" className="block text-sm font-medium text-surface-800">
+              Email Address
             </label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              maxLength={100}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your email"
+              className="w-full px-4 py-2.5 bg-white border border-surface-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+              placeholder="name@company.com"
             />
           </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="space-y-1">
+            <label htmlFor="password" className="block text-sm font-medium text-surface-800">
               Password
             </label>
             <input
@@ -61,31 +63,32 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your password"
+              className="w-full px-4 py-2.5 bg-white border border-surface-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+              placeholder="••••••••"
             />
           </div>
 
           {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
+            <div className="text-red-500 text-sm text-center bg-red-50 p-3 rounded-lg">
+              {error}
+            </div>
           )}
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            className="w-full bg-gradient-to-r from-primary-600 to-primary-500 text-white py-2.5 px-4 rounded-xl hover:from-primary-700 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all font-medium"
           >
-            Login
+            Sign In
           </button>
 
-          <p className="text-center text-sm text-gray-600">
-            Don&apos;t have an account?{' '}
-            <Link href="/signup" className="text-blue-500 hover:text-blue-600 font-medium">
-              Sign up
-            </Link>
-          </p>
+          <p className="text-center text-surface-400">
+  Don&apos;t have an account?{' '}
+  <Link href="/signup" className="text-primary-600 hover:text-primary-700 font-medium">
+    Create account
+  </Link>
+</p>
         </form>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

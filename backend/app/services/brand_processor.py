@@ -1,8 +1,12 @@
+import os
 from typing import Optional
+
+from openai import api_key
 from pydantic import BaseModel, Field
 from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts import PromptTemplate
-from langchain_ollama import OllamaLLM
+# from langchain_ollama import OllamaLLM
+from langchain_openai import OpenAI
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 
@@ -34,7 +38,8 @@ class ProcessedBrandProfile(BaseModel):
 
 class BrandProcessor:
     def __init__(self, model_name: str = "mistral"):
-        self.llm = OllamaLLM(model=model_name)
+        # self.llm = OllamaLLM(model=model_name)
+        self.llm = OpenAI(model='gpt-3.5-turbo-instruct', api_key=os.getenv('OPENAI_API_KEY'))
         self.parser = PydanticOutputParser(pydantic_object=ProcessedBrandProfile)
 
     async def process_brand_responses(self, brand_id: int, db: AsyncSession) -> Optional[Brand]:

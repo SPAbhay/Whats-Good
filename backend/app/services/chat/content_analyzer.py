@@ -1,6 +1,9 @@
+import os
 from typing import Dict, List, Optional, Any
+
 from pydantic import BaseModel
 from langchain_ollama import OllamaLLM
+from langchain_openai import OpenAI
 import re
 
 
@@ -42,7 +45,8 @@ class ContentAnalyzer:
     """
 
     def __init__(self, model_name: str = "mistral", temperature: float = 0.7):
-        self.llm = OllamaLLM(model=model_name, temperature=temperature)
+        # self.llm = OllamaLLM(model=model_name, temperature=temperature)
+        self.llm = OpenAI(temperature=temperature, model='gpt-3.5-turbo-instruct', api_key=os.getenv("OPENAI_API_KEY"))
         self._initialize_patterns()
 
     def _initialize_patterns(self):

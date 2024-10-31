@@ -18,3 +18,4 @@ langchain
 langchain_community
 langchain_huggingface
 pinecone
+langchain_openai

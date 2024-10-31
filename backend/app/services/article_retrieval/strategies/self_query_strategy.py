@@ -3,6 +3,7 @@ import logging
 from langchain_community.vectorstores import Pinecone
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import OllamaLLM
+from langchain_openai import OpenAI
 from langchain.prompts import PromptTemplate
 from pinecone import Pinecone as PineconeClient
 import os
@@ -20,7 +21,12 @@ class SelfQueryStrategy:
             model_kwargs={'device': 'cpu'},
             encode_kwargs={'normalize_embeddings': True}
         )
-        self.llm = OllamaLLM(model="mistral", temperature=0.2)
+        # self.llm = OllamaLLM(model="mistral", temperature=0.2)
+        self.llm = OpenAI(
+            api_key=os.getenv('OPENAI_API_KEY'),
+            temperature=0.2,
+            model='gpt-3.5-turbo-instruct'
+        )
         self.pc = PineconeClient(api_key=os.getenv('PINECONE_API_KEY'))
 
         self.vector_store = Pinecone.from_existing_index(

@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { config } from '../config';
-import { ApiResponse } from '../types/api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 

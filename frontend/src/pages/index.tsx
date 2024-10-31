@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { config } from '../config';
 import api, { brand } from '../services/api';
+import { Navbar } from '../components/layout/Navbar';
 
 interface RecommendedArticle {
   article_id: string;
@@ -48,7 +49,7 @@ const LoadingStates = () => {
     }, 2000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [loadingSteps.length]); // Include loadingSteps.length in the dependency array
 
   return (
     <div className="flex flex-col items-center justify-center space-y-6 py-12">
@@ -97,113 +98,119 @@ export default function Home() {
     loadData();
   }, []);
 
-  const renderArticlesSection = () => (
-    <div className="w-2/3 p-8">
-      <h1 className="text-2xl font-bold mb-6">Recommended Articles</h1>
-      {isLoadingArticles ? (
-        <LoadingStates />
-      ) : (
-        <div className="grid gap-6">
-          {articles.map(article => (
-            <div key={article.article_id} className="article-card bg-white rounded-lg shadow hover:shadow-md transition-all duration-200">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex space-x-2">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                      {article.category || 'General'}
-                    </span>
-                    {article.score > 0.8 && (
-                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                        High Relevance
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-sm text-gray-500">
-                    {article.publish_date && new Date(article.publish_date).toLocaleDateString()}
-                  </span>
-                </div>
-
-                <Link href={`/articles/${article.article_id}`}>
-                  <h2 className="text-xl font-semibold mb-3 line-clamp-2 hover:text-brand-blue transition-colors">
-                    {article.title}
-                  </h2>
-                </Link>
-
-                <p className="text-gray-600 mb-4 line-clamp-3">
-                  {article.summarized_content}
-                </p>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {[article.topic_1, article.topic_2, article.topic_3].filter(Boolean).map((topic, index) => (
-                    <span key={index} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
-                      {topic}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between text-sm border-t pt-4 mt-4">
-                  <span className="text-gray-600 font-medium">
-                    By {article.author || 'Unknown Author'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-          {articles.length === 0 && !errors.articles && (
-            <div className="text-center py-12 bg-white rounded-lg">
-              <p className="text-gray-500">No articles available</p>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-
-  const renderBrandSection = () => (
-    <div className="w-1/3 p-8 border-l">
-      <div className="sticky top-8">
-        <h2 className="text-xl font-bold mb-6">Your Brand Profile</h2>
-        {isLoadingBrand ? (
-          <LoadingStates />
-        ) : brandDetails ? (
-          <div className="bg-white rounded-lg shadow p-6 space-y-4">
-            <div>
-              <h3 className="font-semibold text-gray-700">Brand Name</h3>
-              <p>{brandDetails.processed_brand_name || 'Not processed yet'}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-700">Industry</h3>
-              <p>{brandDetails.processed_industry || 'Not processed yet'}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-700">Target Audience</h3>
-              <p>{brandDetails.processed_target_audience || 'Not processed yet'}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-700">Brand Values</h3>
-              <p>{brandDetails.processed_brand_values || 'Not processed yet'}</p>
-            </div>
-          </div>
-        ) : (
-          <Link
-            href="/onboarding/questions"
-            className="block bg-white rounded-lg shadow p-6 text-center hover:shadow-md transition-shadow"
-          >
-            <div className="text-yellow-600 mb-4">Complete your brand profile</div>
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-              Get Started
-            </button>
-          </Link>
-        )}
-      </div>
-    </div>
-  );
-
   return (
     <ProtectedRoute>
-      <div className="flex flex-col md:flex-row bg-gray-100">
-        {renderArticlesSection()}
-        {renderBrandSection()}
+      <div className="min-h-screen bg-gradient-to-br from-surface-50 to-primary-50">
+        <Navbar />
+        <div className="flex flex-col md:flex-row max-w-7xl mx-auto">
+          {/* Articles Section */}
+          <div className="w-full md:w-2/3 p-6">
+            <h1 className="text-3xl font-bold text-surface-800 mb-8">
+              Recommended Articles
+            </h1>
+            {isLoadingArticles ? (
+              <LoadingStates />
+            ) : (
+              <div className="grid gap-6">
+                {articles.map(article => (
+                  <div key={article.article_id}
+                    className="bg-white/70 backdrop-blur-md rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-surface-200"
+                  >
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex gap-2">
+                          <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
+                            {article.category || 'General'}
+                          </span>
+                          {article.score > 0.8 && (
+                            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                              High Relevance
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-sm text-surface-400">
+                          {article.publish_date && new Date(article.publish_date).toLocaleDateString()}
+                        </span>
+                      </div>
+
+                      <Link href={`/articles/${article.article_id}`}
+                        className="group block"
+                      >
+                        <h2 className="text-xl font-semibold mb-3 text-surface-800 group-hover:text-primary-600 transition-colors">
+                          {article.title}
+                        </h2>
+                      </Link>
+
+                      <p className="mb-4 line-clamp-3 text-gray-800 leading-relaxed">
+                        {article.summarized_content}
+                      </p>
+
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {[article.topic_1, article.topic_2, article.topic_3]
+                          .filter(Boolean)
+                          .map((topic, index) => (
+                            <span key={index}
+                              className="px-3 py-1 bg-surface-100 text-surface-600 rounded-full text-sm font-medium"
+                            >
+                              {topic}
+                            </span>
+                          ))}
+                      </div>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-surface-200">
+                        <span className="text-surface-500 font-medium">
+                          By {article.author || 'Unknown Author'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {articles.length === 0 && !errors.articles && (
+                  <div className="text-center py-12 bg-white/70 backdrop-blur-md rounded-xl border border-surface-200">
+                    <p className="text-surface-500">No articles available</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Brand Section */}
+          <div className="w-full md:w-1/3 p-6">
+            <div className="sticky top-24">
+              <h2 className="text-2xl font-bold text-surface-800 mb-6">
+                Your Brand Profile
+              </h2>
+              {isLoadingBrand ? (
+                <LoadingStates />
+              ) : brandDetails ? (
+                <div className="bg-white/70 backdrop-blur-md rounded-xl shadow-md p-6 space-y-6 border border-surface-200">
+                  {[
+                    { label: 'Brand Name', value: brandDetails.processed_brand_name },
+                    { label: 'Industry', value: brandDetails.processed_industry },
+                    { label: 'Target Audience', value: brandDetails.processed_target_audience },
+                    { label: 'Brand Values', value: brandDetails.processed_brand_values }
+                  ].map(({ label, value }) => (
+                    <div key={label}>
+                      <h3 className="font-semibold text-surface-800 mb-2">{label}</h3>
+                      <p className="text-surface-600">{value || 'Not processed yet'}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Link href="/onboarding/questions"
+                  className="block bg-white/70 backdrop-blur-md rounded-xl shadow-md p-6 text-center hover:shadow-lg transition-all border border-surface-200"
+                >
+                  <div className="text-primary-600 mb-4 font-medium">
+                    Complete your brand profile
+                  </div>
+                  <button className="px-6 py-2 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-lg hover:from-primary-700 hover:to-primary-600 transition-all">
+                    Get Started
+                  </button>
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </ProtectedRoute>
   );

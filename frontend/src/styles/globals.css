@@ -3,8 +3,42 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --brand-blue: #2563eb;
+}
+
+body {
+  color: var(--text-primary);
+}
+
+/* Custom utility classes */
+.text-content {
+  @apply text-gray-800;
+}
+
+.text-subtle {
+  @apply text-gray-600;
+}
+
+/* Card styling */
+.article-card {
+  @apply bg-white rounded-lg shadow hover:shadow-md transition-all duration-200;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+.loading-pulse {
+  @apply animate-pulse bg-gray-200 rounded;
 }
 
 @media (prefers-color-scheme: dark) {

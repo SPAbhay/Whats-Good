@@ -1,8 +1,3 @@
-from ..models.base import Base
-from ..models.user import User
-from ..models.brand import Brand
-from ..models.article import Article
-
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -12,9 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DATABASE_URL = os.getenv('DATABASE_URL')
-
-# This will be imported by Alembic
-__all__ = ["Base", "User", "Brand", "Article", "get_db"]
 
 # Convert regular PostgreSQL URL to AsyncPG URL
 if DATABASE_URL and DATABASE_URL.startswith('postgresql://'):

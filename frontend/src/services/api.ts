@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { config } from '../config';
+import { ApiResponse } from '../types/api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -150,3 +151,52 @@ api.interceptors.response.use(
 );
 
 export { api as default };
+
+export interface RecommendedArticle {
+  article_id: string;
+  title: string;
+  summarized_content: string;
+  category: string;
+  topic_1?: string;
+  topic_2?: string;
+  topic_3?: string;
+  topic_4?: string;
+  topic_5?: string;
+  score: number;
+  retrieval_strategy: string;
+  matched_aspects: string[];
+}
+
+export interface ArticleFeedback {
+  article_id: string;
+  brand_id: number;
+  is_relevant: boolean;
+  feedback_type: string;
+}
+
+export const getRecommendedArticles = async (brandId: number, limit: number = 5): Promise<RecommendedArticle[]> => {
+  try {
+    const response = await fetch(`/api/articles/recommended/${brandId}?limit=${limit}`);
+    const data = await response.json();
+    return data.articles;
+  } catch (error) {
+    console.error('Error fetching recommended articles:', error);
+    return [];
+  }
+};
+
+export const submitArticleFeedback = async (feedback: ArticleFeedback): Promise<boolean> => {
+  try {
+    const response = await fetch('/api/articles/feedback', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(feedback),
+    });
+    return response.ok;
+  } catch (error) {
+    console.error('Error submitting feedback:', error);
+    return false;
+  }
+};
